@@ -1,0 +1,7 @@
+{
+  "name": "BiblioNavia - Gestión de Biblioteca Escolar",
+  "description": "Sistema móvil inteligente de gestión de biblioteca escolar para préstamos, devoluciones, reservas y catálogo de libros.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

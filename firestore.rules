@@ -1,0 +1,132 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'luzbenitez06091@gmail.com' ||
+        (exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+         getUserData().rol == 'administrador')
+      );
+    }
+
+    // Colección: usuarios
+    match /usuarios/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == userId &&
+        isValidId(userId) &&
+        request.resource.data.uid == userId &&
+        (request.resource.data.rol == 'estudiante' || isAdmin()) &&
+        request.resource.data.nombre is string && request.resource.data.nombre.size() <= 100 &&
+        request.resource.data.documento is string && request.resource.data.documento.size() <= 20 &&
+        request.resource.data.correo is string && request.resource.data.correo.size() <= 100;
+      allow update: if (isOwner(userId) &&
+        request.resource.data.uid == userId &&
+        request.resource.data.rol == resource.data.rol && // El estudiante NO puede cambiarse el rol
+        request.resource.data.correo == resource.data.correo) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // Colección: libros
+    match /libros/{libroId} {
+      allow read, write: if true;
+    }
+
+    // Colección: prestamos
+    match /prestamos/{prestamoId} {
+      allow read: if isSignedIn() && (resource.data.usuarioId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() &&
+        isValidId(prestamoId) &&
+        (request.resource.data.usuarioId == request.auth.uid || isAdmin()) &&
+        request.resource.data.estado in ['Solicitado', 'Activo'];
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        resource.data.usuarioId == request.auth.uid &&
+        request.resource.data.usuarioId == resource.data.usuarioId &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['renovaciones', 'fechaDevolucion'])
+      );
+      allow delete: if isAdmin();
+    }
+
+    // Colección: reservas
+    match /reservas/{reservaId} {
+      allow read: if isSignedIn() && (resource.data.usuarioId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() &&
+        isValidId(reservaId) &&
+        (request.resource.data.usuarioId == request.auth.uid || isAdmin()) &&
+        request.resource.data.estado == 'Pendiente';
+      allow update: if isAdmin() || (
+        isSignedIn() &&
+        resource.data.usuarioId == request.auth.uid &&
+        request.resource.data.estado == 'Cancelada' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['estado'])
+      );
+      allow delete: if isAdmin() || (isSignedIn() && resource.data.usuarioId == request.auth.uid);
+    }
+
+    // Colección: favoritos
+    match /favoritos/{favoritoId} {
+      allow read: if isSignedIn() && (resource.data.usuarioId == request.auth.uid || isAdmin());
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() &&
+        isValidId(favoritoId) &&
+        request.resource.data.usuarioId == request.auth.uid;
+      allow delete: if isSignedIn() && (resource.data.usuarioId == request.auth.uid || isAdmin());
+      allow update: if false;
+    }
+
+    // Colección de prueba de conexión
+    match /test/{testId} {
+      allow read: if true;
+    }
+
+    // Colección: notificaciones
+    match /notificaciones/{notificacionId} {
+      allow read: if isSignedIn() && (
+        resource.data.usuarioId == request.auth.uid ||
+        resource.data.usuarioId == 'todos' ||
+        resource.data.usuarioId == 'admin-001' ||
+        isAdmin()
+      );
+      allow list: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(notificacionId) &&
+        request.resource.data.titulo is string && request.resource.data.titulo.size() <= 150 &&
+        request.resource.data.mensaje is string && request.resource.data.mensaje.size() <= 600;
+      allow update: if isSignedIn() && (
+        resource.data.usuarioId == request.auth.uid ||
+        resource.data.usuarioId == 'todos' ||
+        resource.data.usuarioId == 'admin-001' ||
+        isAdmin()
+      ) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['leido']);
+      allow delete: if isSignedIn() && (
+        resource.data.usuarioId == request.auth.uid ||
+        resource.data.usuarioId == 'admin-001' ||
+        isAdmin()
+      );
+    }
+  }
+}

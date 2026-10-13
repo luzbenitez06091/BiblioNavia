@@ -1,0 +1,307 @@
+{
+  "entities": {
+    "Usuario": {
+      "title": "Usuario",
+      "description": "Perfil de usuario institucional (estudiante o administrador/bibliotecario) de BiblioNavia",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "description": "Identificador único de Firebase Authentication",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre completo del estudiante o administrador",
+          "minLength": 3,
+          "maxLength": 100
+        },
+        "documento": {
+          "type": "string",
+          "description": "Documento de identidad",
+          "minLength": 5,
+          "maxLength": 20
+        },
+        "codigo": {
+          "type": "string",
+          "description": "Código institucional / estudiantil",
+          "minLength": 3,
+          "maxLength": 20
+        },
+        "grado": {
+          "type": "string",
+          "description": "Grado escolar o cargo",
+          "maxLength": 30
+        },
+        "correo": {
+          "type": "string",
+          "format": "email",
+          "description": "Correo electrónico institucional",
+          "maxLength": 100
+        },
+        "foto": {
+          "type": "string",
+          "description": "URL o avatar del perfil",
+          "maxLength": 500
+        },
+        "rol": {
+          "type": "string",
+          "description": "Rol en el sistema: estudiante o administrador",
+          "enum": ["estudiante", "administrador"]
+        },
+        "fechaRegistro": {
+          "type": "string",
+          "description": "Fecha ISO de registro en la plataforma"
+        }
+      },
+      "required": ["uid", "nombre", "documento", "codigo", "correo", "rol"]
+    },
+    "Libro": {
+      "title": "Libro",
+      "description": "Ejemplar en el catálogo de la biblioteca escolar",
+      "type": "object",
+      "properties": {
+        "idLibro": {
+          "type": "string",
+          "description": "ID único del libro",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "titulo": {
+          "type": "string",
+          "description": "Título del libro",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "autor": {
+          "type": "string",
+          "description": "Nombre del autor o autores",
+          "minLength": 1,
+          "maxLength": 150
+        },
+        "editorial": {
+          "type": "string",
+          "description": "Casa editorial",
+          "maxLength": 100
+        },
+        "isbn": {
+          "type": "string",
+          "description": "Código ISBN estándar",
+          "maxLength": 30
+        },
+        "anio": {
+          "type": "number",
+          "description": "Año de publicación"
+        },
+        "paginas": {
+          "type": "number",
+          "description": "Número de páginas del ejemplar"
+        },
+        "categoria": {
+          "type": "string",
+          "description": "Categoría o género literario / materia",
+          "maxLength": 50
+        },
+        "imagen": {
+          "type": "string",
+          "description": "URL de la portada del libro",
+          "maxLength": 500
+        },
+        "ubicacion": {
+          "type": "string",
+          "description": "Ubicación física en la biblioteca (ej. Estante B-4)",
+          "maxLength": 100
+        },
+        "descripcion": {
+          "type": "string",
+          "description": "Sinopsis o descripción del contenido",
+          "maxLength": 2000
+        },
+        "estado": {
+          "type": "string",
+          "description": "Disponibilidad del libro",
+          "enum": ["Disponible", "Prestado", "Reservado"]
+        }
+      },
+      "required": ["idLibro", "titulo", "autor", "categoria", "estado"]
+    },
+    "Prestamo": {
+      "title": "Prestamo",
+      "description": "Registro de préstamo de un libro a un estudiante",
+      "type": "object",
+      "properties": {
+        "idPrestamo": {
+          "type": "string",
+          "description": "ID único del préstamo",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "usuarioId": {
+          "type": "string",
+          "description": "UID del estudiante solicitante",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "libroId": {
+          "type": "string",
+          "description": "ID del libro prestado",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "fechaPrestamo": {
+          "type": "string",
+          "description": "Fecha y hora del inicio del préstamo"
+        },
+        "fechaDevolucion": {
+          "type": "string",
+          "description": "Fecha límite pactada para la devolución"
+        },
+        "fechaEntregado": {
+          "type": "string",
+          "description": "Fecha real en que el libro fue devuelto a la biblioteca"
+        },
+        "estado": {
+          "type": "string",
+          "description": "Estado del préstamo",
+          "enum": ["Solicitado", "Activo", "Devuelto", "Vencido", "Cancelado"]
+        },
+        "renovaciones": {
+          "type": "number",
+          "description": "Cantidad de veces renovado"
+        }
+      },
+      "required": ["idPrestamo", "usuarioId", "libroId", "fechaPrestamo", "fechaDevolucion", "estado"]
+    },
+    "Reserva": {
+      "title": "Reserva",
+      "description": "Registro de cola de espera para libros prestados",
+      "type": "object",
+      "properties": {
+        "idReserva": {
+          "type": "string",
+          "description": "ID de la reserva",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "usuarioId": {
+          "type": "string",
+          "description": "UID del usuario que reserva",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "libroId": {
+          "type": "string",
+          "description": "ID del libro reservado",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "fecha": {
+          "type": "string",
+          "description": "Fecha en que se realizó la reserva"
+        },
+        "posicion": {
+          "type": "number",
+          "description": "Posición en la fila de espera"
+        },
+        "estado": {
+          "type": "string",
+          "description": "Estado de la reserva",
+          "enum": ["Pendiente", "Disponible", "Completada", "Cancelada"]
+        }
+      },
+      "required": ["idReserva", "usuarioId", "libroId", "fecha", "posicion", "estado"]
+    },
+    "Favorito": {
+      "title": "Favorito",
+      "description": "Libros guardados en favoritos por el estudiante",
+      "type": "object",
+      "properties": {
+        "idFavorito": {
+          "type": "string",
+          "description": "Identificador único de favorito",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "usuarioId": {
+          "type": "string",
+          "description": "UID del usuario propietario",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "libroId": {
+          "type": "string",
+          "description": "ID del libro guardado",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "fecha": {
+          "type": "string",
+          "description": "Fecha en que se guardó"
+        }
+      },
+      "required": ["idFavorito", "usuarioId", "libroId"]
+    },
+    "Notificacion": {
+      "title": "Notificacion",
+      "description": "Notificaciones del sistema dirigidas al estudiante",
+      "type": "object",
+      "properties": {
+        "idNotificacion": {
+          "type": "string",
+          "description": "ID de la notificación",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "usuarioId": {
+          "type": "string",
+          "description": "UID del destinatario",
+          "pattern": "^[a-zA-Z0-9_-]+$"
+        },
+        "titulo": {
+          "type": "string",
+          "description": "Título de la notificación",
+          "maxLength": 120
+        },
+        "mensaje": {
+          "type": "string",
+          "description": "Cuerpo del mensaje descriptivo",
+          "maxLength": 500
+        },
+        "fecha": {
+          "type": "string",
+          "description": "Fecha de emisión"
+        },
+        "leido": {
+          "type": "boolean",
+          "description": "Estado de lectura"
+        },
+        "tipo": {
+          "type": "string",
+          "description": "Tipo de evento de la notificación",
+          "enum": ["devolucion", "disponible", "aprobado", "vencido", "sistema", "solicitud", "registro"]
+        },
+        "categoria": {
+          "type": "string",
+          "description": "Categoría para filtrado y organización",
+          "enum": ["solicitudes", "registros", "sistema"]
+        }
+      },
+      "required": ["idNotificacion", "usuarioId", "titulo", "mensaje", "fecha", "leido"]
+    }
+  },
+  "firestore": {
+    "/usuarios/{userId}": {
+      "schema": { "$ref": "#/entities/Usuario" },
+      "description": "Perfiles de usuarios institucionales (estudiantes y administradores)"
+    },
+    "/libros/{libroId}": {
+      "schema": { "$ref": "#/entities/Libro" },
+      "description": "Catálogo de libros disponibles en la biblioteca escolar"
+    },
+    "/prestamos/{prestamoId}": {
+      "schema": { "$ref": "#/entities/Prestamo" },
+      "description": "Historial y préstamos activos de libros a estudiantes"
+    },
+    "/reservas/{reservaId}": {
+      "schema": { "$ref": "#/entities/Reserva" },
+      "description": "Cola de reservas de libros para los estudiantes"
+    },
+    "/favoritos/{favoritoId}": {
+      "schema": { "$ref": "#/entities/Favorito" },
+      "description": "Marcadores y libros favoritos de cada usuario"
+    },
+    "/notificaciones/{notificacionId}": {
+      "schema": { "$ref": "#/entities/Notificacion" },
+      "description": "Notificaciones individuales para cada usuario"
+    }
+  }
+}

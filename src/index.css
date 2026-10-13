@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+/* Definición de Familias Tipográficas Configurables */
+html, body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  transition: font-size 0.2s ease, font-family 0.2s ease;
+}
+
+html.font-sans, .font-sans {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+html.font-dyslexic, .font-dyslexic {
+  font-family: 'Lexend', sans-serif !important;
+  letter-spacing: 0.025em;
+  word-spacing: 0.08em;
+}
+
+html.font-serif, .font-serif {
+  font-family: 'Merriweather', Georgia, Cambria, serif !important;
+}
+
+html.font-mono, .font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', Menlo, monospace !important;
+}
+
+/* Escalas Dinámicas de Tamaño de Texto */
+html.text-size-pequena,
+body.text-size-pequena {
+  font-size: 13.5px !important;
+}
+
+html.text-size-normal,
+body.text-size-normal {
+  font-size: 16px !important;
+}
+
+html.text-size-grande,
+body.text-size-grande {
+  font-size: 18.5px !important;
+}
+
+.app-scale-pequena {
+  font-size: 0.88rem;
+  letter-spacing: -0.01em;
+}
+
+.app-scale-normal {
+  font-size: 1rem;
+}
+
+.app-scale-grande {
+  font-size: 1.14rem;
+  letter-spacing: 0.01em;
+}
